@@ -1,0 +1,56 @@
+# Dépendances
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-debug.log*
+
+# Variables d'environnement
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Fichiers de build
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+
+# Fichiers de cache
+.cache/
+.eslintcache
+.npm/
+.yarn/
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Éditeurs et IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Coverage et tests
+coverage/
+.nyc_output/
+*.lcov
+
+# Fichiers temporaires
+tmp/
+temp/
+*.tmp
+
+# Fichiers uploadés (si applicable)
+uploads/
