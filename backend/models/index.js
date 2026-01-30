@@ -9,20 +9,30 @@ User.hasMany(Performance, {
     foreignKey: 'userId',
     onDelete: 'CASCADE'
 });
+
 Performance.belongsTo(User, {
      foreignKey: 'userId' 
 });
-Performance.hasMany(Exercise, {
-     foreignKey: 'exerciseId',
-     onDelete: 'CASCADE'
+
+Performance.belongsToMany(Exercise, {
+    through: 'PerformanceExercises',
+    foreignKey: 'performanceId',
+    otherKey: 'exerciseId',
+    onDelete: 'CASCADE'
 });
+
 Exercise.belongsToMany(Performance, {
-     foreignKey: 'exerciseId' 
+    through: 'PerformanceExercises',
+    foreignKey: 'exerciseId',
+    otherKey: 'performanceId',
+    onDelete: 'CASCADE'
 });
+
 Performance.hasMany(Serie, {
      foreignKey: 'performanceId',
      onDelete: 'CASCADE' 
 });
+
 Serie.belongsTo(Performance, {
      foreignKey: 'performanceId' 
 });

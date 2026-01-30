@@ -5,6 +5,8 @@ const Exercise = sequelize.define('Exercise', {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4
     },
     name : {
         type: DataTypes.STRING,
@@ -19,3 +21,5 @@ const Exercise = sequelize.define('Exercise', {
         allowNull: false
     }
 })
+
+module.exports = Exercise;

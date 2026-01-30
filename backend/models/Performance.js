@@ -6,6 +6,8 @@ const Performance = sequelize.define('Performance', {
     id: {
         type: DataTypes.UUID,
         primaryKey: true,
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4
     },
     date : {
         type: DataTypes.DATE,
@@ -16,7 +18,7 @@ const Performance = sequelize.define('Performance', {
         allowNull: true
     },
     userId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false
     },
     exerciseId: {
@@ -24,3 +26,5 @@ const Performance = sequelize.define('Performance', {
         allowNull: false
     }
 })
+
+module.exports = Performance;

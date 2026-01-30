@@ -1,11 +1,13 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
+const jwt = require('jsonwebtoken')
 
 const User = sequelize.define('User', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         primaryKey: true,
-        autoIncrement: true
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV4
     },
     name : {
         type: DataTypes.STRING,
@@ -24,4 +26,25 @@ const User = sequelize.define('User', {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
     }
-})
+});
+
+User.prototype.generateAuthToken = function() {
+    const token = jwt.sign(
+        {
+            userId: this.id
+        },
+        process.env.JWT_SECRET,
+        {
+            expiresIn : '7d'
+        }
+    ) 
+    return token;
+};
+
+User.prototype.toJSON = function() {
+    const values = Object.assign({}, this.get());
+    delete values.password;
+    return values
+}
+
+module.exports = User;
