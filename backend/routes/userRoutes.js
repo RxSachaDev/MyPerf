@@ -4,7 +4,7 @@ const { User } = require('../models');
 const userController = require('../controllers/userController');
 
 // Routes publiques
-router.post('/api/auth/register', userController.register)
+router.post('/register', userController.register)
 
 // Routes pour les utilisateurs
 

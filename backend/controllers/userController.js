@@ -7,7 +7,7 @@ exports.register = async (req, res) => {
     try {
         const {name, mail, password} = req.body;
 
-        const existingUser = await User.findOne({ where: {mail}});
+        const existingUser = await User.findByMail(mail);
         if (existingUser) {
             return res.status(409).json({ 
                 error: 'Email déjà utilisé',
@@ -26,7 +26,7 @@ exports.register = async (req, res) => {
         const token = user.generateAuthToken();
 
         res.status(201).json({
-            message: 'Inscription réussi',
+            message: 'Inscription réussie',
             user: user.toJSON(), token
         })
 
@@ -36,5 +36,13 @@ exports.register = async (req, res) => {
             error: 'Erreur lors de l\'inscription',
             message: error.message 
         });
+    }
+}
+
+exports.login = async (req, res) => {
+    try {
+        const { mail, password } = req.body;
+    } catch( error ) {
+        
     }
 }

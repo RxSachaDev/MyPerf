@@ -33,14 +33,18 @@ User.prototype.generateAuthToken = function() {
         {
             expiresIn : '7d'
         }
-    ) 
+    );
     return token;
 };
 
 User.prototype.toJSON = function() {
     const values = Object.assign({}, this.get());
     delete values.password;
-    return values
-}
+    return values;
+};
+
+User.findByMail = async function(mail) {
+    return await User.findOne({ where: { mail } });
+};
 
 module.exports = User;

@@ -1,6 +1,17 @@
 // config/database.js
 const { Sequelize } = require('sequelize');
+const path = require('path');
 require('dotenv').config();
+
+// Charger le bon fichier .env selon l'environnement
+const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
+
+require('dotenv').config({
+  path: path.resolve(process.cwd(), envFile)
+});
+
+console.log(`📁 Utilisation de l'environnement: ${envFile}`);
+console.log(`🗄️  Base de données: ${process.env.DB_NAME}`);
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
