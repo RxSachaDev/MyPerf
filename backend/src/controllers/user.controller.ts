@@ -25,7 +25,7 @@ export const register = async (req: Request, res: Response) => {
 
         const token = user.generateAuthToken();
 
-        res.status(201).json({
+        res.status(200).json({
             message: 'Inscription réussie',
             user: user.toJSON(), token
         })
@@ -44,7 +44,36 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
     try {
         const { mail, password } = req.body;
+
+        if (!mail || !password) {
+            return res.status(400).json({ 
+                error: 'Mail et mot de passe requis',
+                message: 'Mail et mot de passe requis' 
+            });
+        }
+
+        const user = await User.findByCredentials(mail, password);
+        if (!user) {
+            return res.status(401).json({ 
+                error: 'Identifiant ou mot de passe incorrect',
+                message: 'Identifiant ou mot de passe incorrect' 
+            });
+        }
+
+        const token = user.generateAuthToken();
+
+        res.status(201).json({
+            message: 'Connexion réussie',
+            user: user.toJSON(), token
+        })
+
     } catch( error: unknown ) {
-        
+        if (error instanceof Error) {
+            console.error('Erreur login:', error);
+            res.status(500).json({ 
+                error: 'Erreur lors de la connexion',
+                message: error.message 
+            });
+        }
     }
 }

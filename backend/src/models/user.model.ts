@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/database';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt'
 
 /* -------- TYPES -------- */
 
@@ -48,6 +49,17 @@ class User
 
   static async findByMail(mail: string): Promise<User | null> {
     return await User.findOne({ where: { mail } });
+  }
+
+  static async findByCredentials(mail: string, password: string) : Promise<User | null> {
+
+    const user = await User.findByMail(mail);
+    if (!user) return null;
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return null;
+
+    return user;
   }
 }
 
