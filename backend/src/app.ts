@@ -1,20 +1,21 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import userRoutes from './routes/user.routes';
+import { notFoundMiddleware, errorMiddleware } from './middlewares/error.middleware';
+import { loggerMiddleware } from './middlewares/logger.middleware';
+
 
 const app = express();
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    next();
-})
-
-// Middleware
+//Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Logger (optionnel, pour le développement)
+if (process.env.NODE_ENV === 'development') {
+  app.use(loggerMiddleware);
+}
 
 // Route de test
 app.get('/', (req: Request, res: Response) => {
@@ -23,15 +24,10 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/api/auth', userRoutes);
 
-// Middleware 404
-app.use((req: Request, res: Response) => {
-  res.status(404).json({ error: 'Route non trouvée' });
-});
+// 404 - Route non trouvée
+app.use(notFoundMiddleware);
 
-// Middleware d'erreur global
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Erreur serveur' });
-});
+// Gestionnaire d'erreur global
+app.use(errorMiddleware);
 
 export default app;
