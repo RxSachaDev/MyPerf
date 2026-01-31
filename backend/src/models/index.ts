@@ -1,7 +1,7 @@
-const User = require('./User');
-const Exercise = require('./Exercise');
-const Performance = require('./Performance');
-const Serie = require('./Serie');
+import User from './user.model';
+import Exercise from './exercise.model';
+import Performance from './performance.model';
+import Serie from './serie.model';
 
 // Associations
 
@@ -37,9 +37,9 @@ Serie.belongsTo(Performance, {
      foreignKey: 'performanceId' 
 });
 
-module.exports = {
-    User,
-    Exercise,
-    Performance,
-    Serie
+export {
+  User,
+  Exercise,
+  Performance,
+  Serie
 };

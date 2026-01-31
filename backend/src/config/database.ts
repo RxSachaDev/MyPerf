@@ -1,7 +1,5 @@
-// config/database.js
-const { Sequelize } = require('sequelize');
-const path = require('path');
-require('dotenv').config();
+import { Sequelize } from 'sequelize';
+import path from 'path';
 
 // Charger le bon fichier .env selon l'environnement
 const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
@@ -14,14 +12,14 @@ console.log(`📁 Utilisation de l'environnement: ${envFile}`);
 console.log(`🗄️  Base de données: ${process.env.DB_NAME}`);
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
+  process.env.DB_NAME as string,
+  process.env.DB_USER as string,
+  process.env.DB_PASSWORD as string,
   {
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: 'postgresql',
-    logging: process.env.NODE_ENV === 'development' ? console.log : false,
+    port: Number(process.env.DB_PORT),
+    dialect: 'postgres',
+    logging: false,
     pool: {
       max: 5,
       min: 0,
@@ -31,7 +29,7 @@ const sequelize = new Sequelize(
   }
 );
 
-const testConnection = async () => {
+export const testConnection = async () => {
   try {
     await sequelize.authenticate();
     console.log('Connexion à PostgreSQL réussie');
@@ -40,4 +38,4 @@ const testConnection = async () => {
   }
 };
 
-module.exports = { sequelize, testConnection };
+export default sequelize;

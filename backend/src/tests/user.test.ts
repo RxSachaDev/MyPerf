@@ -1,8 +1,8 @@
 process.env.NODE_ENV = 'test';
 
-const request = require('supertest');
-const app = require('../app');
-const { User } = require('../models');
+import request from 'supertest'
+import app from '../app';
+import { User } from '../models'
 
 require('./setup')
 
@@ -29,7 +29,7 @@ describe ('User Registration', () => {
             // Vérifier en base de données de TEST
             const userInDb = await User.findOne({ where: { mail: userData.mail } });
             expect(userInDb).toBeTruthy();
-            expect(userInDb.name).toBe(userData.name);
+            expect(userInDb?.name).toBe(userData.name);
         })
 
         it('devrait renvoyer une erreur 409 car le mail est déjà utiliser', async () => {

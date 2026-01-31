@@ -1,4 +1,4 @@
-const { sequelize } = require('../config/database')
+import sequelize from "../config/database";
 
 beforeAll(async () => {
   try {

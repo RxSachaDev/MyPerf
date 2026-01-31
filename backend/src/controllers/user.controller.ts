@@ -1,9 +1,9 @@
-const { User } = require('../models');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken')
+import { Request, Response} from 'express';
+import { User } from '../models';
+import bcrypt from 'bcrypt';
 
 // Inscription d'un nouvel utilisateur
-exports.register = async (req, res) => {
+export const register = async (req: Request, res: Response) => {
     try {
         const {name, mail, password} = req.body;
 
@@ -30,19 +30,21 @@ exports.register = async (req, res) => {
             user: user.toJSON(), token
         })
 
-    } catch (error) {
-        console.error('Erreur register:', error);
-        res.status(500).json({ 
-            error: 'Erreur lors de l\'inscription',
-            message: error.message 
-        });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('Erreur register:', error);
+            res.status(500).json({ 
+                error: 'Erreur lors de l\'inscription',
+                message: error.message 
+            });
+        }
     }
 }
 
-exports.login = async (req, res) => {
+export const login = async (req: Request, res: Response) => {
     try {
         const { mail, password } = req.body;
-    } catch( error ) {
+    } catch( error: unknown ) {
         
     }
 }
