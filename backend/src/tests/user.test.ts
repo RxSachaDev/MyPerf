@@ -12,7 +12,7 @@ describe("User Registration", () => {
       const userData = {
         name: "Sacha",
         mail: "sacha.test@test.com",
-        password: "test",
+        password: "Test&385",
       };
 
       const response = await request(app)
@@ -35,7 +35,7 @@ describe("User Registration", () => {
       const userData = {
         name: "Sacha",
         mail: "sacha.test@test.com",
-        password: "test",
+        password: "Test&385",
       };
 
       await request(app).post("/api/auth/register").send(userData);
@@ -52,4 +52,30 @@ describe("User Registration", () => {
       );
     });
   });
+
+  it("devraait retourner une erreur 400 car le mail est invalide", async () => {
+    const userData = {
+        name: "Sacha",
+        mail: "sacha.test@test",
+        password: "Test&385",
+      };
+
+      const response = await request(app)
+        .post("/api/auth/register")
+        .send(userData)
+        .expect(400);
+  })
+
+  it("devraait retourner une erreur 400 car le mot de passe est invalide", async () => {
+    const userData = {
+        name: "Sacha",
+        mail: "sacha.test@test.com",
+        password: "test",
+      };
+
+      const response = await request(app)
+        .post("/api/auth/register")
+        .send(userData)
+        .expect(400);
+  })
 });
