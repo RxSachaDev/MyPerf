@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import userRoutes from './routes/user.routes';
+import exerciceRoute from './routes/exercise.routes';
 import { notFoundMiddleware, errorMiddleware } from './middlewares/error.middleware';
 import { loggerMiddleware } from './middlewares/logger.middleware';
 
@@ -23,6 +24,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/api/auth', userRoutes);
+app.use('api/exercises', exerciceRoute);
 
 // 404 - Route non trouvée
 app.use(notFoundMiddleware);

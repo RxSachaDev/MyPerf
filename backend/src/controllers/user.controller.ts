@@ -10,6 +10,13 @@ export const register = async (req: Request, res: Response) => {
     const strictEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const passwordVeryStrong = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
+    if (!mail || !password) {
+      return res.status(400).json({
+        error: "Mail et mot de passe requis",
+        message: "Mail et mot de passe requis",
+      });
+    }
+
     if (!strictEmailRegex.test(mail.trim())) {
       return res.status(400).json({
         error: "Format du mail invalide",
@@ -58,12 +65,20 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
+// Connexion d'un utilisateur
 export const login = async (req: Request, res: Response) => {
   try {
     const { mail, password } = req.body;
 
     const strictEmailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const passwordVeryStrong = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (!mail || !password) {
+      return res.status(400).json({
+        error: "Mail et mot de passe requis",
+        message: "Mail et mot de passe requis",
+      });
+    }
 
     if (!strictEmailRegex.test(mail.trim())) {
       return res.status(400).json({
@@ -76,13 +91,6 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({
         error: "Format du not de passe invalide",
         message: "Format du mot de passe invalide, veuillez entrer un mot de passe avec au moins 8 caractères, 1 majuscule, 1 minuscule, 1 chiffre et 1 caractère spécial",
-      });
-    }
-
-    if (!mail || !password) {
-      return res.status(400).json({
-        error: "Mail et mot de passe requis",
-        message: "Mail et mot de passe requis",
       });
     }
 
