@@ -109,6 +109,7 @@ export const createExercise = async (req:Request, res: Response) => {
         message: "Exercice créé avec succès",
         exercise,
     });
+
   } catch (error) {
     return res.status(500).json({
       message: "Erreur serveur",

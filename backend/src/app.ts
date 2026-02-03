@@ -13,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
 // Logger (optionnel, pour le développement)
 if (process.env.NODE_ENV === 'development') {
   app.use(loggerMiddleware);
@@ -24,7 +25,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/api/auth', userRoutes);
-app.use('api/exercises', exerciceRoute);
+app.use('/api/exercises', exerciceRoute);
 
 // 404 - Route non trouvée
 app.use(notFoundMiddleware);

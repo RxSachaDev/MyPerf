@@ -3,7 +3,7 @@ import { getExercise, createExercise } from '../controllers/exercise.controller'
 const exerciceRoute = express.Router();
 
 // Routes publiques
-exerciceRoute.get('', getExercise)
-exerciceRoute.get('/create', createExercise)
+exerciceRoute.get('/', getExercise)
+exerciceRoute.post('/create', createExercise)
 
 export default exerciceRoute;

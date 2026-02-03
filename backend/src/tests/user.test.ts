@@ -6,7 +6,7 @@ import { User } from "../models";
 
 require("./setup");
 
-describe("User Registration", () => {
+describe("User Authentification", () => {
   describe("POST /api/auth/register", () => {
     it("devrait créer un nouvel utilisateur avec succès", async () => {
       const userData = {
@@ -55,27 +55,68 @@ describe("User Registration", () => {
 
   it("devraait retourner une erreur 400 car le mail est invalide", async () => {
     const userData = {
+      name: "Sacha",
+      mail: "sacha.test@test",
+      password: "Test&385",
+    };
+
+    const response = await request(app)
+      .post("/api/auth/register")
+      .send(userData)
+      .expect(400);
+  });
+
+  it("devraait retourner une erreur 400 car le mot de passe est invalide", async () => {
+    const userData = {
+      name: "Sacha",
+      mail: "sacha.test@test.com",
+      password: "test",
+    };
+
+    const response = await request(app)
+      .post("/api/auth/register")
+      .send(userData)
+      .expect(400);
+  });
+  describe("POST /api/auth/login", () => {
+    it("devrait renvoyer un code 200 et l'utilisateur est connecté", async () => {
+      const userData = {
         name: "Sacha",
-        mail: "sacha.test@test",
+        mail: "sacha.test@test.com",
+        password: "Test&385",
+      };
+
+      await request(app).post("/api/auth/register").send(userData);
+
+      const userDataLogin = {
+        mail: "sacha.test@test.com",
         password: "Test&385",
       };
 
       const response = await request(app)
-        .post("/api/auth/register")
-        .send(userData)
-        .expect(400);
-  })
+        .post("/api/auth/login")
+        .send(userDataLogin)
+        .expect(200)
+    });
 
-  it("devraait retourner une erreur 400 car le mot de passe est invalide", async () => {
-    const userData = {
+    it("devrait renvoyer un code 200 et l'utilisateur est connecté", async () => {
+      const userData = {
         name: "Sacha",
         mail: "sacha.test@test.com",
-        password: "test",
+        password: "Test&385",
+      };
+
+      await request(app).post("/api/auth/register").send(userData);
+
+      const userDataLogin = {
+        mail: "sacha.test@test.com",
+        password: "Test&985",
       };
 
       const response = await request(app)
-        .post("/api/auth/register")
-        .send(userData)
-        .expect(400);
-  })
+        .post("/api/auth/login")
+        .send(userDataLogin)
+        .expect(401)
+    });
+  });
 });
