@@ -10,9 +10,11 @@ interface ExerciseAttributes {
   muscles: string;
 }
 
+type ExerciseCreationAttributes = Optional<ExerciseAttributes, "id">;
+
 /* -------- MODEL -------- */
 
-class Exercise extends Model<ExerciseAttributes> implements ExerciseAttributes {
+class Exercise extends Model<ExerciseAttributes, ExerciseCreationAttributes> implements ExerciseAttributes {
   public id!: string;
   public name!: string;
   public category!: string;
