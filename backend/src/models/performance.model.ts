@@ -34,6 +34,13 @@ class Performance
   static async findById(id: string): Promise<Performance | null> {
     return await Performance.findOne({ where: { id } });
   }
+
+  static async findAllPerformances(filters: any = {}) {
+    return await Performance.findAll({
+      where: filters,
+      order: [["date", "DESC"]]
+    });
+  }
 }
 
 Performance.init(

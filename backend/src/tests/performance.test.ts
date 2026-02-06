@@ -12,28 +12,30 @@ describe("Performance API", () => {
   // POST /api/performances/ - Créer une performance
   // =============================================
 
-  describe("POST /api/performances/", () => {
-    let userId: string;
-    let exerciseId: string;
+  let userId: string;
+  let exerciseId: string;
 
-    beforeEach(async () => {
-      // Créer un utilisateur et un exercice nécessaires
-      const user = await User.create({
-        name: "Test",
-        mail: "test@test.com",
-        password: "password123",
-      });
-
-      const exercise = await Exercise.create({
-        name: "Développé couché",
-        category: "Haut du corps",
-        muscles: "Pectoraux",
-      });
-
-      userId = user.id;
-      exerciseId = exercise.id;
+  beforeEach(async () => {
+    // Créer un utilisateur et un exercice nécessaires
+    const user = await User.create({
+      name: "Test",
+      mail: "test@test.com",
+      password: "password123",
     });
 
+    const exercise = await Exercise.create({
+      name: "Développé couché",
+      category: "Haut du corps",
+      muscles: "Pectoraux",
+    });
+
+    userId = user.id;
+    exerciseId = exercise.id;
+
+
+  });
+
+  describe("POST /api/performances/", () => {
     it("devrait créer une performance avec succès", async () => {
       const performanceData = {
         date: "2025-02-01",
@@ -222,6 +224,134 @@ describe("Performance API", () => {
         .expect(404);
 
       expect(response.body).toHaveProperty("message", "Exercice non trouvé");
+    });
+  });
+
+  describe("GET /api/performances", () => {
+    let perf1: any;
+    let perf2: any;
+    let perf3: any;
+
+    beforeEach(async () => {
+      perf1 = await Performance.create({
+        date: new Date("2025-02-01"),
+        notes: "Séance pectoraux",
+        userId,
+        exerciseId,
+      });
+
+      perf2 = await Performance.create({
+        date: new Date("2025-02-02"),
+        notes: "Séance lourde",
+        userId,
+        exerciseId,
+      });
+
+      perf3 = await Performance.create({
+        date: new Date("2025-02-03"),
+        notes: "Séance légère",
+        userId,
+        exerciseId,
+      });
+    });
+
+    it("devrait récupérer toutes les performances", async () => {
+      const response = await request(app).get("/api/performances").expect(200);
+
+      expect(response.body).toHaveProperty(
+        "message",
+        "Performances récupérées",
+      );
+      expect(response.body.performances.length).toBe(3);
+    });
+
+    it("devrait récupérer une performance par ID", async () => {
+      const response = await request(app)
+        .get("/api/performances")
+        .query({ id: perf1.id })
+        .expect(200);
+
+      expect(response.body).toHaveProperty("message", "Performance récupérée");
+      expect(response.body.performance.id).toBe(perf1.id);
+    });
+
+    it("devrait retourner 404 si ID inexistant", async () => {
+      const response = await request(app)
+        .get("/api/performances")
+        .query({ id: "123e4567-e89b-12d3-a456-426614174000" })
+        .expect(404);
+
+      expect(response.body).toHaveProperty("error", "Performance introuvable");
+    });
+
+    it("devrait filtrer par userId", async () => {
+      const response = await request(app)
+        .get("/api/performances")
+        .query({ userId })
+        .expect(200);
+
+      expect(response.body.performances.length).toBe(3);
+    });
+
+    it("devrait filtrer par exerciseId", async () => {
+      const response = await request(app)
+        .get("/api/performances")
+        .query({ exerciseId })
+        .expect(200);
+
+      expect(response.body.performances.length).toBe(3);
+    });
+
+    it("devrait filtrer par date", async () => {
+      const response = await request(app)
+        .get("/api/performances")
+        .query({ date: "2025-02-02" })
+        .expect(200);
+
+      expect(response.body.performances.length).toBe(1);
+      expect(response.body.performances[0].notes).toBe("Séance lourde");
+    });
+
+    it("devrait combiner userId + exerciseId", async () => {
+      const response = await request(app)
+        .get("/api/performances")
+        .query({ userId, exerciseId })
+        .expect(200);
+
+      expect(response.body.performances.length).toBe(3);
+    });
+
+    it("devrait retourner un tableau vide si aucun résultat", async () => {
+      const response = await request(app)
+        .get("/api/performances")
+        .query({ date: "2030-01-01" })
+        .expect(200);
+
+      expect(response.body.performances).toHaveLength(0);
+      expect(response.body.message).toBe("Aucune performance trouvée");
+    });
+
+    it("devrait prioriser la recherche par ID", async () => {
+      const response = await request(app)
+        .get("/api/performances")
+        .query({
+          id: perf2.id,
+          userId,
+          date: "2025-02-01",
+        })
+        .expect(200);
+
+      expect(response.body.performance.id).toBe(perf2.id);
+    });
+
+    it("devrait trier par date décroissante", async () => {
+      const response = await request(app).get("/api/performances").expect(200);
+
+      const dates = response.body.performances.map((p: any) =>
+        new Date(p.date).toISOString(),
+      );
+
+      expect(dates).toEqual([...dates].sort().reverse());
     });
   });
 });
