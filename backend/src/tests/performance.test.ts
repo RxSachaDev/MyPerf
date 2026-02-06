@@ -31,8 +31,6 @@ describe("Performance API", () => {
 
     userId = user.id;
     exerciseId = exercise.id;
-
-
   });
 
   describe("POST /api/performances/", () => {
@@ -352,6 +350,124 @@ describe("Performance API", () => {
       );
 
       expect(dates).toEqual([...dates].sort().reverse());
+    });
+  });
+
+  describe("Performance API › PUT /api/performances/:id", () => {
+    let performanceId: string;
+
+    beforeEach(async () => {
+      const performance = await Performance.create({
+        date: new Date("2025-02-01"),
+        notes: "Séance initiale",
+        userId,
+        exerciseId,
+      });
+
+      performanceId = performance.id;
+    });
+
+    // ============================
+    // SUCCESS
+    // ============================
+
+    it("devrait modifier la date", async () => {
+      const response = await request(app)
+        .put(`/api/performances/${performanceId}`)
+        .send({
+          date: "2025-03-01",
+        })
+        .expect(200);
+
+      expect(response.body.message).toBe("Performance modifiée avec succès");
+
+      expect(response.body.performance.date).toContain("2025-03-01");
+    });
+
+    it("devrait modifier les notes", async () => {
+      const response = await request(app)
+        .put(`/api/performances/${performanceId}`)
+        .send({
+          notes: "Nouvelle séance",
+        })
+        .expect(200);
+
+      expect(response.body.performance.notes).toBe("Nouvelle séance");
+    });
+
+    it("devrait modifier date et notes", async () => {
+      const response = await request(app)
+        .put(`/api/performances/${performanceId}`)
+        .send({
+          date: "2025-04-01",
+          notes: "Séance modifiée",
+        })
+        .expect(200);
+
+      expect(response.body.performance.date).toContain("2025-04-01");
+
+      expect(response.body.performance.notes).toBe("Séance modifiée");
+    });
+
+    // ============================
+    // ERRORS
+    // ============================
+
+    it("devrait retourner 404 si ID inexistant", async () => {
+      const response = await request(app)
+        .put("/api/performances/123e4567-e89b-12d3-a456-426614174000")
+        .send({
+          notes: "Test",
+        })
+        .expect(404);
+
+      expect(response.body.error).toBe("Performance introuvable");
+    });
+
+    it("devrait retourner 400 si aucun champ fourni", async () => {
+      const response = await request(app)
+        .put(`/api/performances/${performanceId}`)
+        .send({})
+        .expect(400);
+
+      expect(response.body.error).toBe("Aucune donnée à modifier");
+    });
+  });
+
+  describe("DELETE /api/performances/:id", () => {
+    it("devrait supprimer une performance", async () => {
+      const performance = await Performance.create({
+        date: new Date("2025-02-01"),
+        notes: "Séance initiale",
+        userId,
+        exerciseId,
+      });
+
+      const response = await request(app)
+        .delete(`/api/performances/${performance.id}`)
+        .expect(200);
+
+      expect(response.body.message).toBe("Performance supprimée avec succès");
+      expect(response.body.deletedPerformance.id).toBe(performance.id);
+
+      // Vérifier que la performance n'existe plus
+      const deleted = await Performance.findById(performance.id);
+      expect(deleted).toBeNull();
+    });
+
+    it("devrait retourner 404 si ID inexistant", async () => {
+      const response = await request(app)
+        .delete("/api/performances/3fa85f64-5717-4562-b3fc-2c963f66afa6")
+        .expect(404);
+
+      expect(response.body.error).toBe("Performance introuvable");
+    });
+
+    it("devrait retourner 400 si ID manquant", async () => {
+      const response = await request(app)
+        .delete("/api/performances/")
+        .expect(404);
+      // Express ne matche pas la route sans ID
     });
   });
 });

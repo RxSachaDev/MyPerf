@@ -91,3 +91,95 @@ export const getPerformance = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const editPerformance = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;  
+    const { date, notes } = req.body;  
+
+    // Vérifier que l'ID est fourni
+    if (!id) {
+      return res.status(400).json({
+        error: "ID de l'exercice requis",
+        message: "L'ID de l'exercice est requis",
+      });
+    }
+
+    // Vérifier que l'exercice existe
+    const existingPerformance = await Performance.findById(id as string);
+
+    if (!existingPerformance) {
+      return res.status(404).json({
+        error: "Performance introuvable",
+        message: "Aucun exercice trouvé avec cet ID",
+      });
+    }
+
+    // Vérifier qu'au moins un champ est fourni pour la mise à jour
+    if (!date && !notes) {
+      return res.status(400).json({
+        error: "Aucune donnée à modifier",
+        message: "Veuillez fournir au moins un champ à modifier (name, category, ou muscles)",
+      });
+    }
+
+    // Mettre à jour l'exercice
+    await existingPerformance.update({
+      date: date || existingPerformance.date,
+      notes: notes || existingPerformance.notes
+    });
+
+    return res.status(200).json({
+      message: "Performance modifiée avec succès",
+      performance: existingPerformance,
+    });
+
+  } catch (error) {
+    console.error('Erreur editExercise:', error);
+    return res.status(500).json({
+      error: "Erreur serveur",
+      message: error instanceof Error ? error.message : "Erreur inconnue",
+    });
+  }
+};
+
+export const deletePerformance = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // Vérifier que l'ID est fourni
+    if (!id) {
+      return res.status(400).json({
+        error: "ID de la performance requis",
+        message: "L'ID de la performance est requis",
+      });
+    }
+
+    // Vérifier que l'exercice existe
+    const performance = await Performance.findById(id as string);
+
+    if (!performance) {
+      return res.status(404).json({
+        error: "Performance introuvable",
+        message: "Aucune performance trouvée avec cet ID",
+      });
+    }
+
+    // Supprimer l'exercice
+    await performance.destroy();
+
+    return res.status(200).json({
+      message: "Performance supprimée avec succès",
+      deletedPerformance: {
+        id: performance.id,
+      },
+    });
+
+  } catch (error) {
+    console.error('Erreur deleteExercise:', error);
+    return res.status(500).json({
+      error: "Erreur serveur",
+      message: error instanceof Error ? error.message : "Erreur inconnue",
+    });
+  }
+};
