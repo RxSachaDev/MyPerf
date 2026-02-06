@@ -28,6 +28,12 @@ class Performance
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  /* -------- STATIC METHODS -------- */
+
+  static async findById(id: string): Promise<Performance | null> {
+    return await Performance.findOne({ where: { id } });
+  }
 }
 
 Performance.init(
