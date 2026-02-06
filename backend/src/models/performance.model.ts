@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
+import { DataTypes, Model, Optional } from "sequelize";
+import sequelize from "../config/database";
 
 /* -------- TYPES -------- */
 
@@ -11,8 +11,10 @@ interface PerformanceAttributes {
   exerciseId: string;
 }
 
-interface PerformanceCreationAttributes
-  extends Optional<PerformanceAttributes, 'id' | 'notes'> {}
+interface PerformanceCreationAttributes extends Optional<
+  PerformanceAttributes,
+  "id" | "notes"
+> {}
 
 /* -------- MODEL -------- */
 
@@ -35,10 +37,23 @@ class Performance
     return await Performance.findOne({ where: { id } });
   }
 
+  static async findByExercise(exerciseId: string, userId?: string) {
+    const where: any = { exerciseId };
+
+    if (userId) {
+      where.userId = userId;
+    }
+
+    return await Performance.findAll({
+      where,
+      order: [["date", "DESC"]],
+    });
+  }
+
   static async findAllPerformances(filters: any = {}) {
     return await Performance.findAll({
       where: filters,
-      order: [["date", "DESC"]]
+      order: [["date", "DESC"]],
     });
   }
 }
@@ -49,30 +64,30 @@ Performance.init(
       type: DataTypes.UUID,
       primaryKey: true,
       allowNull: false,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
     },
     date: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: false,
     },
     notes: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: true,
     },
     userId: {
       type: DataTypes.UUID,
-      allowNull: false
+      allowNull: false,
     },
     exerciseId: {
       type: DataTypes.UUID,
-      allowNull: false
-    }
+      allowNull: false,
+    },
   },
   {
     sequelize,
-    modelName: 'Performance',
-    tableName: 'Performances'
-  }
+    modelName: "Performance",
+    tableName: "Performances",
+  },
 );
 
 export default Performance;

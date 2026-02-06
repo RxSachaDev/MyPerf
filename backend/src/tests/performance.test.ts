@@ -470,4 +470,86 @@ describe("Performance API", () => {
       // Express ne matche pas la route sans ID
     });
   });
+
+  describe("Performance History API", () => {
+
+    /* ------------------------------------------ */
+    /* SUCCESS */
+    /* ------------------------------------------ */
+
+    it("devrait retourner l'historique trié par date", async () => {
+      await Performance.create({
+        date: new Date("2025-01-01"),
+        notes: "Ancienne séance",
+        userId,
+        exerciseId,
+      });
+
+      await Performance.create({
+        date: new Date("2025-03-01"),
+        notes: "Dernière séance",
+        userId,
+        exerciseId,
+      });
+
+      const response = await request(app)
+        .get(`/api/performances/exercise/${exerciseId}`)
+        .expect(200);
+
+      expect(response.body.message).toBe("Historique récupéré avec succès");
+      expect(response.body.performances.length).toBe(2);
+
+      // tri DESC
+      expect(response.body.performances[0].notes).toBe("Dernière séance");
+      expect(response.body.performances[1].notes).toBe("Ancienne séance");
+    });
+
+    /* ------------------------------------------ */
+    /* EMPTY HISTORY */
+    /* ------------------------------------------ */
+
+    it("devrait retourner un tableau vide si aucune performance", async () => {
+      const exercise = await Exercise.create({
+        name: "Squat",
+        category: "Musculation",
+        muscles: "Jambes",
+      });
+
+      const response = await request(app)
+        .get(`/api/performances/exercise/${exercise.id}`)
+        .expect(200);
+
+      expect(response.body.performances).toEqual([]);
+    });
+
+    /* ------------------------------------------ */
+    /* EXERCISE NOT FOUND */
+    /* ------------------------------------------ */
+
+    it("devrait retourner 404 si exercice inexistant", async () => {
+      const response = await request(app)
+        .get("/api/performances/exercise/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
+        .expect(404);
+
+      expect(response.body.error).toBe("Exercice introuvable");
+    });
+
+    /* ------------------------------------------ */
+    /* SERVER ERROR */
+    /* ------------------------------------------ */
+
+    it("devrait retourner 500 en cas d'erreur serveur", async () => {
+      jest
+        .spyOn(Exercise, "findById")
+        .mockRejectedValueOnce(new Error("DB crash"));
+
+      const response = await request(app)
+        .get(`/api/performances/exercise/${exerciseId}`)
+        .expect(500);
+
+      expect(response.body.error).toBe("Erreur serveur");
+
+      jest.restoreAllMocks();
+    });
+  });
 });
