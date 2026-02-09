@@ -3,6 +3,7 @@ import cors from 'cors';
 import userRoutes from './routes/user.routes';
 import exerciceRoute from './routes/exercise.routes';
 import performanceRoutes from './routes/performance.routes';
+import serieRoutes from './routes/serie.routes';
 import { notFoundMiddleware, errorMiddleware } from './middlewares/error.middleware';
 import { loggerMiddleware } from './middlewares/logger.middleware';
 
@@ -28,6 +29,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api/auth', userRoutes);
 app.use('/api/exercises', exerciceRoute);
 app.use('/api/performances', performanceRoutes);
+app.use('/api/series', serieRoutes);
 
 // 404 - Route non trouvée
 app.use(notFoundMiddleware);

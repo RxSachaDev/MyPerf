@@ -6,6 +6,8 @@ import sequelize from '../config/database';
 interface SerieAttributes {
   id: string;
   repetitions: number;
+  weight: number;
+  unit: string;
   performanceId: string;
 }
 
@@ -20,6 +22,8 @@ class Serie
 {
   public id!: string;
   public repetitions!: number;
+  public weight!: number;
+  public unit!: string;
   public performanceId!: string;
 
   public readonly createdAt!: Date;
@@ -36,6 +40,14 @@ Serie.init(
     },
     repetitions: {
       type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    weight: {
+      type: DataTypes.DOUBLE,
+      allowNull: false
+    },
+    unit: {
+      type: DataTypes.STRING,
       allowNull: false
     },
     performanceId: {
